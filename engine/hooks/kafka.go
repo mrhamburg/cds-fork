@@ -71,13 +71,13 @@ func (s *Service) startKafkaHook(ctx context.Context, t *sdk.Task) error {
 	config.Version = sarama.V0_10_0_1
 
   //Check for Azure EventHubs
-  if c.options.User == "$ConnectionString" {
+  if kafkaUser == "$ConnectionString" {
     config := sarama.NewConfig()
     config.Net.DialTimeout = 10 * time.Second
 
     config.Net.SASL.Enable = true
     config.Net.SASL.User = "$ConnectionString"
-    config.Net.SASL.Password = c.options.Password
+    config.Net.SASL.Password = password
     config.Net.SASL.Mechanism = "PLAIN"
 
     config.Net.TLS.Enable = true
