@@ -16,5 +16,5 @@ require (
 	github.com/yesnault/go-imap v0.0.0-20160710142244-eb9bbb66bd7b // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
 	gopkg.in/testfixtures.v2 v2.6.0 // indirect
-	gopkg.in/yaml.v2 v2.2.7
+	gopkg.in/yaml.v2 v2.2.8
 )

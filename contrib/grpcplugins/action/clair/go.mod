@@ -34,5 +34,5 @@ require (
 	github.com/quay/clair/v2 v2.1.1
 	github.com/spf13/viper v1.5.0
 	github.com/vbatts/tar-split v0.11.1 // indirect
-	golang.org/x/net v0.0.0-20191204025024-5ee1b9f4859a
+	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 )

@@ -1,9 +1,11 @@
 package main
 
 import (
-	"strings"
+  "crypto/tls"
+  "strings"
+  "time"
 
-	"github.com/Shopify/sarama"
+  "github.com/Shopify/sarama"
 )
 
 //Client to send to kafka
@@ -15,6 +17,25 @@ func initKafkaProducer(kafka, user, password string) (sarama.SyncProducer, error
 	c.Net.SASL.Password = password
 	c.ClientID = user
 	c.Producer.Return.Successes = true
+
+  //Check for Azure EventHubs
+  if user == "$ConnectionString" {
+    config := sarama.NewConfig()
+    config.Net.DialTimeout = 10 * time.Second
+
+    config.Net.SASL.Enable = true
+    config.Net.SASL.User = "$ConnectionString"
+    config.Net.SASL.Password = password
+    config.Net.SASL.Mechanism = "PLAIN"
+
+    config.Net.TLS.Enable = true
+    config.Net.TLS.Config = &tls.Config{
+      InsecureSkipVerify: true,
+      ClientAuth:         0,
+    }
+    config.Version = sarama.V1_0_0_0
+    config.Producer.Return.Successes = true
+  }
 
 	producer, err := sarama.NewSyncProducer(strings.Split(kafka, ","), c)
 	if err != nil {

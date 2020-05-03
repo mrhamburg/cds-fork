@@ -1,10 +1,12 @@
 package event
 
 import (
-	"encoding/json"
+  "crypto/tls"
+  "encoding/json"
 	"fmt"
+  "time"
 
-	"github.com/Shopify/sarama"
+  "github.com/Shopify/sarama"
 	"gopkg.in/bsm/sarama-cluster.v2"
 
 	"github.com/ovh/cds/sdk"
@@ -17,9 +19,27 @@ func ConsumeKafka(addr, topic, group, user, password string, ProcessEventFunc fu
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = user
 	config.Net.SASL.Password = password
-	config.Version = sarama.V0_10_0_1
 
-	config.ClientID = user
+  //Check for Azure EventHubs
+  if user == "$ConnectionString" {
+    config := sarama.NewConfig()
+    config.Net.DialTimeout = 10 * time.Second
+
+    config.Net.SASL.Enable = true
+    config.Net.SASL.User = "$ConnectionString"
+    config.Net.SASL.Password = password
+    config.Net.SASL.Mechanism = "PLAIN"
+
+    config.Net.TLS.Enable = true
+    config.Net.TLS.Config = &tls.Config{
+      InsecureSkipVerify: true,
+      ClientAuth:         0,
+    }
+    config.Producer.Return.Successes = true
+  }
+
+  config.ClientID = user
+  config.Version = sarama.V1_0_0_0
 
 	clusterConfig := cluster.NewConfig()
 	clusterConfig.Config = *config

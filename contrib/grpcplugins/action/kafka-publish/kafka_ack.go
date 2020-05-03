@@ -1,7 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+  "crypto/tls"
+  "encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -21,8 +22,28 @@ func ackFromKafka(kafka, topic, group, user, password, key string, timeout time.
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = user
 	config.Net.SASL.Password = password
-	config.ClientID = user
 	config.Producer.Return.Successes = true
+
+  //Check for Azure EventHubs
+  if user == "$ConnectionString" {
+    config := sarama.NewConfig()
+    config.Net.DialTimeout = 10 * time.Second
+
+    config.Net.SASL.Enable = true
+    config.Net.SASL.User = "$ConnectionString"
+    config.Net.SASL.Password = password
+    config.Net.SASL.Mechanism = "PLAIN"
+
+    config.Net.TLS.Enable = true
+    config.Net.TLS.Config = &tls.Config{
+      InsecureSkipVerify: true,
+      ClientAuth:         0,
+    }
+    config.Version = sarama.V1_0_0_0
+    config.Producer.Return.Successes = true
+  }
+
+  config.ClientID = user
 
 	client, err := sarama.NewClient([]string{kafka}, config)
 	if err != nil {
