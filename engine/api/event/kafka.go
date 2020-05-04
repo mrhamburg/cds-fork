@@ -2,13 +2,13 @@ package event
 
 import (
 	"context"
-  "crypto/tls"
-  "encoding/json"
+	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"strings"
-  "time"
+	"time"
 
-  "github.com/Shopify/sarama"
+	"github.com/Shopify/sarama"
 
 	"github.com/ovh/cds/sdk"
 	"github.com/ovh/cds/sdk/log"
@@ -68,31 +68,33 @@ func (c *KafkaClient) initProducer() error {
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = c.options.User
 	config.Net.SASL.Password = c.options.Password
+	config.ClientID = c.options.User
 
 	//Check for Azure EventHubs
 	if c.options.User == "$ConnectionString" {
-    config := sarama.NewConfig()
-    config.Net.DialTimeout = 10 * time.Second
+		config := sarama.NewConfig()
+		config.Net.DialTimeout = 10 * time.Second
 
-    config.Net.SASL.Enable = true
-    config.Net.SASL.User = "$ConnectionString"
-    config.Net.SASL.Password = c.options.Password
-    config.Net.SASL.Mechanism = "PLAIN"
+		config.Net.SASL.Enable = true
+		config.Net.SASL.User = "$ConnectionString"
+		config.Net.SASL.Password = c.options.Password
+		config.Net.SASL.Mechanism = "PLAIN"
 
-    config.Net.TLS.Enable = true
-    config.Net.TLS.Config = &tls.Config{
-      InsecureSkipVerify: true,
-      ClientAuth:         0,
-    }
-    config.Version = sarama.V1_0_0_0
-  }
+		config.Net.TLS.Enable = true
+		config.Net.TLS.Config = &tls.Config{
+			InsecureSkipVerify: true,
+			ClientAuth:         0,
+		}
+		config.Version = sarama.V1_0_0_0
+		config.ClientID = "unknown"
 
-  config.Producer.Return.Successes = true
-  config.ClientID = c.options.User
+	}
 
-  if config.Producer.MaxMessageBytes != 0 {
-    config.Producer.MaxMessageBytes = c.options.MaxMessageByte
-  }
+	config.Producer.Return.Successes = true
+
+	if config.Producer.MaxMessageBytes != 0 {
+		config.Producer.MaxMessageBytes = c.options.MaxMessageByte
+	}
 
 	producer, errp := sarama.NewSyncProducer(strings.Split(c.options.BrokerAddresses, ","), config)
 	if errp != nil {

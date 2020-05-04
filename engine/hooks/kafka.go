@@ -68,27 +68,29 @@ func (s *Service) startKafkaHook(ctx context.Context, t *sdk.Task) error {
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = kafkaUser
 	config.Net.SASL.Password = password
-
-  //Check for Azure EventHubs
-  if kafkaUser == "$ConnectionString" {
-    config := sarama.NewConfig()
-    config.Net.DialTimeout = 10 * time.Second
-
-    config.Net.SASL.Enable = true
-    config.Net.SASL.User = "$ConnectionString"
-    config.Net.SASL.Password = password
-    config.Net.SASL.Mechanism = "PLAIN"
-
-    config.Net.TLS.Enable = true
-    config.Net.TLS.Config = &tls.Config{
-      InsecureSkipVerify: true,
-      ClientAuth:         0,
-    }
-  }
-
-  config.Version = sarama.V1_0_0_0
-  config.Producer.Return.Successes = true
 	config.ClientID = kafkaUser
+
+	//Check for Azure EventHubs
+	if kafkaUser == "$ConnectionString" {
+		config := sarama.NewConfig()
+		config.Net.DialTimeout = 10 * time.Second
+
+		config.Net.SASL.Enable = true
+		config.Net.SASL.User = "$ConnectionString"
+		config.Net.SASL.Password = password
+		config.Net.SASL.Mechanism = "PLAIN"
+
+		config.Net.TLS.Enable = true
+		config.Net.TLS.Config = &tls.Config{
+		InsecureSkipVerify: true,
+		ClientAuth:         0,
+		}
+
+		config.ClientID = "unknown"
+	}
+
+	config.Version = sarama.V1_0_0_0
+	config.Producer.Return.Successes = true
 
 	clusterConfig := cluster.NewConfig()
 	clusterConfig.Config = *config

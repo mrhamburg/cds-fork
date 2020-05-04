@@ -9,7 +9,7 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve -c development",
+    "start": "ng serve -c development --host 0.0.0.0 --disableHostCheck",
     "test": "ng lint && ng test --watch false --code-coverage",
     "test:model": "ng test --include src/app/model --watch false --code-coverage",
     "test:shared": "ng test --include src/app/shared --watch false --code-coverage",
