@@ -35,9 +35,9 @@ func ConsumeKafka(addr, topic, group, user, password string, ProcessEventFunc fu
       InsecureSkipVerify: true,
       ClientAuth:         0,
     }
-    config.Producer.Return.Successes = true
   }
 
+  config.Producer.Return.Successes = true
   config.ClientID = user
   config.Version = sarama.V1_0_0_0
 

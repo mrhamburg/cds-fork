@@ -22,7 +22,6 @@ func ackFromKafka(kafka, topic, group, user, password, key string, timeout time.
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = user
 	config.Net.SASL.Password = password
-	config.Producer.Return.Successes = true
 
   //Check for Azure EventHubs
   if user == "$ConnectionString" {
@@ -40,9 +39,9 @@ func ackFromKafka(kafka, topic, group, user, password, key string, timeout time.
       ClientAuth:         0,
     }
     config.Version = sarama.V1_0_0_0
-    config.Producer.Return.Successes = true
   }
 
+  config.Producer.Return.Successes = true
   config.ClientID = user
 
 	client, err := sarama.NewClient([]string{kafka}, config)

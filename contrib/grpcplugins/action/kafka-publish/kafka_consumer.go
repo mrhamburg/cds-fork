@@ -26,7 +26,6 @@ func consumeFromKafka(kafka, topic, group, user, password, key string, gpgPrivat
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = user
 	config.Net.SASL.Password = password
-	config.Producer.Return.Successes = true
 
   //Check for Azure EventHubs
   if user == "$ConnectionString" {
@@ -44,9 +43,9 @@ func consumeFromKafka(kafka, topic, group, user, password, key string, gpgPrivat
       ClientAuth:         0,
     }
     config.Version = sarama.V1_0_0_0
-    config.Producer.Return.Successes = true
   }
 
+  config.Producer.Return.Successes = true
   config.ClientID = user
 
 	client, err := sarama.NewClient([]string{kafka}, config)

@@ -15,8 +15,6 @@ func initKafkaProducer(kafka, user, password string) (sarama.SyncProducer, error
 	c.Net.SASL.Enable = true
 	c.Net.SASL.User = user
 	c.Net.SASL.Password = password
-	c.ClientID = user
-	c.Producer.Return.Successes = true
 
   //Check for Azure EventHubs
   if user == "$ConnectionString" {
@@ -34,8 +32,10 @@ func initKafkaProducer(kafka, user, password string) (sarama.SyncProducer, error
       ClientAuth:         0,
     }
     config.Version = sarama.V1_0_0_0
-    config.Producer.Return.Successes = true
   }
+
+  c.Producer.Return.Successes = true
+  c.ClientID = user
 
 	producer, err := sarama.NewSyncProducer(strings.Split(kafka, ","), c)
 	if err != nil {

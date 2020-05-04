@@ -68,7 +68,6 @@ func (s *Service) startKafkaHook(ctx context.Context, t *sdk.Task) error {
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = kafkaUser
 	config.Net.SASL.Password = password
-	config.Version = sarama.V0_10_0_1
 
   //Check for Azure EventHubs
   if kafkaUser == "$ConnectionString" {
@@ -85,10 +84,10 @@ func (s *Service) startKafkaHook(ctx context.Context, t *sdk.Task) error {
       InsecureSkipVerify: true,
       ClientAuth:         0,
     }
-    config.Version = sarama.V1_0_0_0
-    config.Producer.Return.Successes = true
   }
 
+  config.Version = sarama.V1_0_0_0
+  config.Producer.Return.Successes = true
 	config.ClientID = kafkaUser
 
 	clusterConfig := cluster.NewConfig()

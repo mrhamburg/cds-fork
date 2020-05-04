@@ -68,8 +68,6 @@ func (c *KafkaClient) initProducer() error {
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = c.options.User
 	config.Net.SASL.Password = c.options.Password
-	config.ClientID = c.options.User
-	config.Producer.Return.Successes = true
 
 	//Check for Azure EventHubs
 	if c.options.User == "$ConnectionString" {
@@ -87,8 +85,10 @@ func (c *KafkaClient) initProducer() error {
       ClientAuth:         0,
     }
     config.Version = sarama.V1_0_0_0
-    config.Producer.Return.Successes = true
   }
+
+  config.Producer.Return.Successes = true
+  config.ClientID = c.options.User
 
   if config.Producer.MaxMessageBytes != 0 {
     config.Producer.MaxMessageBytes = c.options.MaxMessageByte
